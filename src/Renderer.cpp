@@ -29,9 +29,9 @@ void Renderer::clear() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::draw(World *world) {
+void Renderer::draw(World *world, Camera *camera) {
     for (position p : world->get_blocks())
-        this->cube_renderer->draw(p);
+        this->cube_renderer->draw(p, camera);
 }
 
 CubeRenderer::CubeRenderer()
@@ -103,17 +103,14 @@ CubeRenderer::~CubeRenderer() {
     glDeleteBuffers(1, &this->vbo);
 }
 
-void CubeRenderer::draw(position pos) {
+void CubeRenderer::draw(position pos, Camera *camera) {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, pos);
-    model = glm::rotate(model, glm::radians(45.0f),
-            glm::vec3(0.0f, 1.0f, 0.0f));
 
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 view = camera->get_view();
 
     glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(45.0f), 1400.0f / 900.0f, 0.1f, 100.0f);
 
     this->shader.use();
     this->shader.set_mat4("model", model);

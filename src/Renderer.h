@@ -2,6 +2,7 @@
 
 #include "Shader.h"
 #include "World.h"
+#include "Camera.h"
 
 class CubeRenderer {
 private:
@@ -12,7 +13,7 @@ private:
 public:
     CubeRenderer();
     ~CubeRenderer();
-    void draw(position pos);
+    void draw(position pos, Camera *camera);
 };
 
 class Renderer {
@@ -24,5 +25,5 @@ public:
     ~Renderer();
     void set_viewport(int width, int height);
     void clear();
-    void draw(World *world);
+    void draw(World *world, Camera *camera);
 };

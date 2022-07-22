@@ -1,16 +1,25 @@
 #include "Game.h"
 
 Game::Game() {
-    this->window = new Window(800, 600);
-    this->renderer = new Renderer(800, 600);
-    this->window->set_callback_renderer(this->renderer);
+    this->window = new Window(1400, 900);
+    this->renderer = new Renderer(1400, 900);
+    this->window->set_user_pointer(this);
     this->world = new World();
+    this->camera = new Camera(glm::vec3(0.0f, 2.0f, 3.0f));
 }
 
 Game::~Game() {
     delete this->window;
     delete this->renderer;
     delete this->world;
+}
+
+Camera *Game::get_camera() {
+    return this->camera;
+}
+
+Renderer *Game::get_renderer() {
+    return this->renderer;
 }
 
 void Game::loop() {
@@ -21,7 +30,9 @@ void Game::loop() {
 
         this->renderer->clear();
 
-        this->renderer->draw(this->world);
+        this->renderer->draw(this->world, this->camera);
+
+        this->window->process_input(this->camera);
 
         this->window->swap_buffers();
         this->window->poll_events();

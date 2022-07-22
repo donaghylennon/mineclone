@@ -1,8 +1,11 @@
 #pragma once
 
 #include "Renderer.h"
+#include "Camera.h"
 
 #include <GLFW/glfw3.h>
+
+class Game;
 
 class Window {
 private:
@@ -11,10 +14,10 @@ private:
 public:
     Window(int width, int height);
     ~Window();
-    //void set_dimensions(int width, int height);
-    void set_callback_renderer(Renderer *renderer);
+    void set_user_pointer(Game *game);
     bool should_close();
     float get_time();
     void swap_buffers();
     void poll_events();
+    void process_input(Camera *camera);
 };
