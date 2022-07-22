@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Shader.h"
+#include "World.h"
 
 class CubeRenderer {
 private:
@@ -11,7 +12,7 @@ private:
 public:
     CubeRenderer();
     ~CubeRenderer();
-    void draw();
+    void draw(position pos);
 };
 
 class Renderer {
@@ -22,5 +23,6 @@ public:
     Renderer(int width, int height);
     ~Renderer();
     void set_viewport(int width, int height);
-    void draw();
+    void clear();
+    void draw(World *world);
 };

@@ -17,4 +17,5 @@ private:
     std::unordered_set<position> map;
 public:
     World();
+    std::unordered_set<position>& get_blocks();
 };

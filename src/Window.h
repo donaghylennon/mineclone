@@ -6,16 +6,15 @@
 
 class Window {
 private:
-    int width;
-    int height;
-    float last_frame_time;
-    float delta_time;
     GLFWwindow *window;
-    Renderer *renderer;
 
 public:
     Window(int width, int height);
     ~Window();
     //void set_dimensions(int width, int height);
-    void loop();
+    void set_callback_renderer(Renderer *renderer);
+    bool should_close();
+    float get_time();
+    void swap_buffers();
+    void poll_events();
 };

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <string>
 
 class Shader {
@@ -11,4 +15,5 @@ public:
     ~Shader();
     void use();
     void set_float(std::string name, float value);
+    void set_mat4(std::string name, glm::mat4& value);
 };

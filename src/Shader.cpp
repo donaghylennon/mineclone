@@ -75,3 +75,12 @@ void Shader::set_float(std::string name, float value) {
     }
     glUniform1f(location, value);
 }
+
+void Shader::set_mat4(std::string name, glm::mat4& value) {
+    int location = glGetUniformLocation(this->id, name.c_str());
+    if (location < 0) {
+        std::cout << "Uniform does not exist at location: " << name << std::endl;
+        exit(1);
+    }
+    glUniformMatrix4fv(location, 1, false, glm::value_ptr(value));
+}
