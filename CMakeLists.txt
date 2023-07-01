@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 project(minecraft)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
 # Add .lib files
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 
