@@ -12,6 +12,7 @@ Game::~Game() {
     delete this->window;
     delete this->renderer;
     delete this->world;
+    delete this->camera;
 }
 
 Camera *Game::get_camera() {
