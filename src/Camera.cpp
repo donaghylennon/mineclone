@@ -22,6 +22,11 @@ void Camera::rotate(float x, float y) {
     else if (this->pitch < -89.0f)
         this->pitch = -89.0f;
 
+    if (this->yaw > 180)
+        this->yaw -= 360;
+    else if (this->yaw <= -180)
+        this->yaw += 360;
+
     this->update();
 }
 
