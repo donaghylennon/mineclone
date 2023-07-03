@@ -1,5 +1,9 @@
 #pragma once
 
+#include "World.h"
+
+#include <optional>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -16,6 +20,9 @@ private:
     float pitch;
     float yaw;
     glm::mat4 view;
+
+    bool moved_since_last_highlight_check;
+    std::optional<glm::vec3> last_faced_block_position;
 public:
     Camera(glm::vec3 position);
     void translate(glm::vec3 direction);
@@ -23,4 +30,6 @@ public:
     void rotate(float x, float y);
     void update();
     glm::mat4 get_view();
+
+    std::optional<glm::vec3> get_faced_block_pos(World *world);
 };

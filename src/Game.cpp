@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <optional>
 
 Game::Game() {
     this->window = new Window(1400, 900);

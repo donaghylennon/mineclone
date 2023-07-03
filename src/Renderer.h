@@ -14,7 +14,7 @@ private:
 public:
     CubeRenderer();
     ~CubeRenderer();
-    void draw(position pos, Camera *camera);
+    void draw(position pos, Camera *camera, bool highlighted);
 };
 
 class Renderer {

@@ -15,5 +15,6 @@ public:
     ~Shader();
     void use();
     void set_float(std::string name, float value);
+    void set_vec3(std::string name, glm::vec3 value);
     void set_mat4(std::string name, glm::mat4& value);
 };

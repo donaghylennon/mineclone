@@ -32,8 +32,15 @@ void Renderer::clear() {
 }
 
 void Renderer::draw(World *world, Camera *camera) {
+    auto faced_block = camera->get_faced_block_pos(world);
+
+    bool player_is_facing_block = false;
+    if (faced_block.has_value())
+        player_is_facing_block = true;
+
     for (position p : world->get_blocks())
-        this->cube_renderer->draw(p, camera);
+        this->cube_renderer->draw(p, camera, player_is_facing_block
+                && p == *faced_block);
 }
 
 CubeRenderer::CubeRenderer()
@@ -122,7 +129,7 @@ CubeRenderer::~CubeRenderer() {
     glDeleteBuffers(1, &this->vbo);
 }
 
-void CubeRenderer::draw(position pos, Camera *camera) {
+void CubeRenderer::draw(position pos, Camera *camera, bool highlighted) {
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, pos);
 
@@ -138,6 +145,11 @@ void CubeRenderer::draw(position pos, Camera *camera) {
     this->shader.set_mat4("model", model);
     this->shader.set_mat4("view", view);
     this->shader.set_mat4("projection", projection);
+    if (highlighted) {
+        this->shader.set_float("highlight", 0.2f);
+    } else {
+        this->shader.set_float("highlight", 0.0f);
+    }
     glBindVertexArray(this->vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
