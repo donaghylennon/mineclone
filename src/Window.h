@@ -19,5 +19,5 @@ public:
     float get_time();
     void swap_buffers();
     void poll_events();
-    void process_input(Camera *camera);
+    void process_input(Camera *camera, World *world);
 };

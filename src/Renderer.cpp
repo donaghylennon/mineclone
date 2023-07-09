@@ -131,7 +131,7 @@ CubeRenderer::~CubeRenderer() {
 
 void CubeRenderer::draw(position pos, Camera *camera, bool highlighted) {
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, pos);
+    model = glm::translate(model, pos + glm::vec3(0.5f, 0.5f, 0.5f));
 
     glm::mat4 view = camera->get_view();
 

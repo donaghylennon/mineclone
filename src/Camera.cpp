@@ -72,11 +72,43 @@ std::optional<glm::vec3> Camera::get_faced_block_pos(World *world) {
         this->moved_since_last_highlight_check = false;
         std::unordered_set<glm::vec3>& blocks = world->get_blocks();
         bool found = false;
-        for (float i = 0; i < 10; i++) {
-            glm::vec3 coords = glm::floor(this->position + i*this->front + glm::vec3(0.5f));
-            //glm::vec3 coords = glm::ceil(this->position + i*this->front);
+        for (float i = 0; i < 10; i+=0.25f) {
+            glm::vec3 real_ray_pos = this->position + i*this->front;
+            glm::vec3 coords = glm::floor(real_ray_pos);
             auto result = blocks.find(coords);
             if (result != blocks.end()) {
+                glm::vec3 relative_to_block_centre =
+                    real_ray_pos - (coords + glm::vec3(0.5f));
+                //calculate greatest abs(dim), then use sign to pick 
+                //nearest block face
+                glm::vec3 absolute = glm::abs(relative_to_block_centre);
+                if (absolute.x > absolute.y) {
+                    if (absolute.x > absolute.z) {
+                        // x greatest
+                        if (relative_to_block_centre.x >= 0)
+                            this->last_faced_block_face = EAST;
+                        else
+                            this->last_faced_block_face = WEST;
+                    } else {
+                        // z greatest
+                        if (relative_to_block_centre.z >= 0)
+                            this->last_faced_block_face = SOUTH;
+                        else
+                            this->last_faced_block_face = NORTH;
+                    }
+                } else if (absolute.y > absolute.z) {
+                    //y greatest
+                    if (relative_to_block_centre.y >= 0)
+                        this->last_faced_block_face = TOP;
+                    else
+                        this->last_faced_block_face = BOTTOM;
+                } else {
+                    //z greatest
+                    if (relative_to_block_centre.z >= 0)
+                        this->last_faced_block_face = SOUTH;
+                    else
+                        this->last_faced_block_face = NORTH;
+                }
                 this->last_faced_block_position = coords;
                 found = true;
                 break;
@@ -86,4 +118,8 @@ std::optional<glm::vec3> Camera::get_faced_block_pos(World *world) {
             this->last_faced_block_position = {};
     }
     return this->last_faced_block_position;
+}
+
+BlockFace Camera::get_last_faced_block_face() {
+    return this->last_faced_block_face;
 }

@@ -1,7 +1,9 @@
 #include "Window.h"
 
+#include "Camera.h"
 #include "Game.h"
 
+#include <GLFW/glfw3.h>
 #include <iostream>
 
 Window::Window(int width, int height) {
@@ -74,7 +76,7 @@ void Window::poll_events() {
     glfwPollEvents();
 }
 
-void Window::process_input(Camera *camera) {
+void Window::process_input(Camera *camera, World *world) {
     const float camera_speed = 0.05f;
     if (glfwGetKey(this->window, GLFW_KEY_Q) == GLFW_PRESS)
         glfwSetWindowShouldClose(this->window, GLFW_TRUE);
@@ -86,4 +88,31 @@ void Window::process_input(Camera *camera) {
         camera->move(LEFT, camera_speed);
     if (glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
         camera->move(RIGHT, camera_speed);
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        if (auto faced_block = camera->get_faced_block_pos(world)) {
+            BlockFace face = camera->get_last_faced_block_face();
+            glm::vec3 change;
+            switch (face) {
+                case NORTH:
+                    change = glm::vec3(0.0f, 0.0f, -1.0f);
+                    break;
+                case EAST:
+                    change = glm::vec3(1.0f, 0.0f, 0.0f);
+                    break;
+                case SOUTH:
+                    change = glm::vec3(0.0f, 0.0f, 1.0f);
+                    break;
+                case WEST:
+                    change = glm::vec3(-1.0f, 0.0f, 0.0f);
+                    break;
+                case TOP:
+                    change = glm::vec3(0.0f, 1.0f, 0.0f);
+                    break;
+                case BOTTOM:
+                    change = glm::vec3(0.0f, -1.0f, 0.0f);
+                    break;
+            }
+            world->place_block(faced_block.value() + change);
+        }
+    }
 }

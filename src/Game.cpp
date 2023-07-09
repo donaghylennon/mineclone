@@ -6,7 +6,7 @@ Game::Game() {
     this->renderer = new Renderer(1400, 900);
     this->window->set_user_pointer(this);
     this->world = new World();
-    this->camera = new Camera(glm::vec3(0.0f, 2.0f, 3.0f));
+    this->camera = new Camera(glm::vec3(0.5f, 2.5f, 3.5f));
 }
 
 Game::~Game() {
@@ -34,7 +34,7 @@ void Game::loop() {
 
         this->renderer->draw(this->world, this->camera);
 
-        this->window->process_input(this->camera);
+        this->window->process_input(this->camera, this->world);
 
         this->window->swap_buffers();
         this->window->poll_events();

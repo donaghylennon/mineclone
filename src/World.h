@@ -18,4 +18,5 @@ private:
 public:
     World();
     std::unordered_set<position>& get_blocks();
+    void place_block(glm::vec3 pos);
 };
