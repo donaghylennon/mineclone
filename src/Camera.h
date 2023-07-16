@@ -26,7 +26,7 @@ private:
     glm::mat4 view;
 
     bool moved_since_last_highlight_check;
-    std::optional<glm::vec3> last_faced_block_position;
+    std::optional<glm::ivec3> last_faced_block_position;
     BlockFace last_faced_block_face = NORTH;
 public:
     Camera(glm::vec3 position);
@@ -36,6 +36,6 @@ public:
     void update();
     glm::mat4 get_view();
 
-    std::optional<glm::vec3> get_faced_block_pos(World *world);
+    std::optional<glm::ivec3> get_faced_block_pos(World *world);
     BlockFace get_last_faced_block_face();
 };

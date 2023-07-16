@@ -9,7 +9,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include "glm/gtx/hash.hpp"
 
-using position = glm::vec3;
+using position = glm::ivec3;
 
 class World {
 private:
@@ -18,5 +18,5 @@ private:
 public:
     World();
     std::unordered_set<position>& get_blocks();
-    void place_block(glm::vec3 pos);
+    void place_block(glm::ivec3 pos);
 };

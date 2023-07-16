@@ -12,6 +12,6 @@ std::unordered_set<position>& World::get_blocks() {
     return this->map;
 }
 
-void World::place_block(glm::vec3 pos) {
+void World::place_block(glm::ivec3 pos) {
     this->map.insert(pos);
 }

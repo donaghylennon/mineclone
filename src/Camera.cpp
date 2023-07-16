@@ -1,4 +1,6 @@
 #include "Camera.h"
+#include "glm/fwd.hpp"
+#include <cmath>
 #include <optional>
 #include <unordered_set>
 #include <vector>
@@ -67,53 +69,99 @@ glm::mat4 Camera::get_view() {
     return this->view;
 }
 
-std::optional<glm::vec3> Camera::get_faced_block_pos(World *world) {
+std::optional<glm::ivec3> Camera::get_faced_block_pos(World *world) {
     if (this->moved_since_last_highlight_check) {
         this->moved_since_last_highlight_check = false;
-        std::unordered_set<glm::vec3>& blocks = world->get_blocks();
+        std::unordered_set<glm::ivec3>& blocks = world->get_blocks();
         bool found = false;
-        for (float i = 0; i < 10; i+=0.25f) {
-            glm::vec3 real_ray_pos = this->position + i*this->front;
-            glm::vec3 coords = glm::floor(real_ray_pos);
-            auto result = blocks.find(coords);
-            if (result != blocks.end()) {
-                glm::vec3 relative_to_block_centre =
-                    real_ray_pos - (coords + glm::vec3(0.5f));
-                //calculate greatest abs(dim), then use sign to pick 
-                //nearest block face
-                glm::vec3 absolute = glm::abs(relative_to_block_centre);
-                if (absolute.x > absolute.y) {
-                    if (absolute.x > absolute.z) {
-                        // x greatest
-                        if (relative_to_block_centre.x >= 0)
-                            this->last_faced_block_face = EAST;
-                        else
-                            this->last_faced_block_face = WEST;
-                    } else {
-                        // z greatest
-                        if (relative_to_block_centre.z >= 0)
-                            this->last_faced_block_face = SOUTH;
-                        else
-                            this->last_faced_block_face = NORTH;
-                    }
-                } else if (absolute.y > absolute.z) {
-                    //y greatest
-                    if (relative_to_block_centre.y >= 0)
-                        this->last_faced_block_face = TOP;
-                    else
-                        this->last_faced_block_face = BOTTOM;
-                } else {
-                    //z greatest
-                    if (relative_to_block_centre.z >= 0)
-                        this->last_faced_block_face = SOUTH;
-                    else
-                        this->last_faced_block_face = NORTH;
-                }
-                this->last_faced_block_position = coords;
+
+        glm::vec3 start = this->position;
+        glm::vec3 ray_direction = this->front;
+
+        glm::vec3 ray_unit_step_size = {
+            std::sqrt(1 + (ray_direction.y/ray_direction.x)
+                    * (ray_direction.y/ray_direction.x)
+                    + (ray_direction.z/ray_direction.x)
+                    * (ray_direction.z/ray_direction.x)),
+            std::sqrt(1 + (ray_direction.x/ray_direction.y)
+                    * (ray_direction.x/ray_direction.y)
+                    + (ray_direction.z/ray_direction.y)
+                    * (ray_direction.z/ray_direction.y)),
+            std::sqrt(1 + (ray_direction.x/ray_direction.z)
+                    * (ray_direction.x/ray_direction.z)
+                    + (ray_direction.y/ray_direction.z)
+                    * (ray_direction.y/ray_direction.z)),
+        };
+
+        glm::ivec3 current_pos = glm::floor(start);
+
+        glm::vec3 ray_length_1D;
+        glm::ivec3 step;
+
+        if (ray_direction.x < 0) {
+            step.x = -1;
+            ray_length_1D.x = (start.x - (float)current_pos.x)
+                * ray_unit_step_size.x;
+        } else {
+            step.x = 1;
+            ray_length_1D.x = ((float)(current_pos.x + 1) - start.x)
+                * ray_unit_step_size.x;
+        }
+        if (ray_direction.y < 0) {
+            step.y = -1;
+            ray_length_1D.y = (start.y - (float)current_pos.y)
+                * ray_unit_step_size.y;
+        } else {
+            step.y = 1;
+            ray_length_1D.y = ((float)(current_pos.y + 1) - start.y)
+                * ray_unit_step_size.y;
+        }
+        if (ray_direction.z < 0) {
+            step.z = -1;
+            ray_length_1D.z = (start.z - (float)current_pos.z)
+                * ray_unit_step_size.z;
+        } else {
+            step.z = 1;
+            ray_length_1D.z = ((float)(current_pos.z + 1) - start.z)
+                * ray_unit_step_size.z;
+        }
+
+        float max_distance = 10.0f;
+        float distance = 0.0f;
+        glm::ivec3 prev_pos = current_pos;
+
+        while (!found && distance < max_distance) {
+            prev_pos = current_pos;
+            if (ray_length_1D.x < ray_length_1D.y
+                    && ray_length_1D.x < ray_length_1D.z) {
+                current_pos.x += step.x;
+                ray_length_1D.x += ray_unit_step_size.x;
+                distance = ray_length_1D.x;
+            } else if (ray_length_1D.y < ray_length_1D.x
+                    && ray_length_1D.y < ray_length_1D.z) {
+                current_pos.y += step.y;
+                ray_length_1D.y += ray_unit_step_size.y;
+                distance = ray_length_1D.y;
+            } else {
+                current_pos.z += step.z;
+                ray_length_1D.z += ray_unit_step_size.z;
+                distance = ray_length_1D.z;
+            }
+
+            if (blocks.find(current_pos) != blocks.end()) {
                 found = true;
-                break;
+                this->last_faced_block_position = current_pos;
+                glm::ivec3 diff = current_pos - prev_pos;
+                if (diff.x) {
+                    this->last_faced_block_face = diff.x >= 0 ? WEST : EAST;
+                } else if (diff.y) {
+                    this->last_faced_block_face = diff.y >= 0 ? BOTTOM : TOP;
+                } else if (diff.z) {
+                    this->last_faced_block_face = diff.z >= 0 ? SOUTH : NORTH;
+                }
             }
         }
+
         if (!found)
             this->last_faced_block_position = {};
     }

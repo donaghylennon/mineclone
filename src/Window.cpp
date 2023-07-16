@@ -91,26 +91,28 @@ void Window::process_input(Camera *camera, World *world) {
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
         if (auto faced_block = camera->get_faced_block_pos(world)) {
             BlockFace face = camera->get_last_faced_block_face();
-            glm::vec3 change;
+            glm::ivec3 change;
             switch (face) {
                 case NORTH:
-                    change = glm::vec3(0.0f, 0.0f, -1.0f);
+                    change = glm::ivec3(0.0, 0.0, 1.0);
                     break;
                 case EAST:
-                    change = glm::vec3(1.0f, 0.0f, 0.0f);
+                    change = glm::ivec3(1.0, 0.0, 0.0);
                     break;
                 case SOUTH:
-                    change = glm::vec3(0.0f, 0.0f, 1.0f);
+                    change = glm::ivec3(0.0, 0.0, -1.0);
                     break;
                 case WEST:
-                    change = glm::vec3(-1.0f, 0.0f, 0.0f);
+                    change = glm::ivec3(-1.0, 0.0, 0.0);
                     break;
                 case TOP:
-                    change = glm::vec3(0.0f, 1.0f, 0.0f);
+                    change = glm::ivec3(0.0, 1.0, 0.0);
                     break;
                 case BOTTOM:
-                    change = glm::vec3(0.0f, -1.0f, 0.0f);
+                    change = glm::ivec3(0.0, -1.0, 0.0);
                     break;
+                default:
+                    return;
             }
             world->place_block(faced_block.value() + change);
         }
