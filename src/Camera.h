@@ -16,23 +16,21 @@ enum BlockFace {
     NORTH, EAST, SOUTH, WEST, TOP, BOTTOM
 };
 
+class Player;
+
 class Camera {
 private:
-    glm::vec3 position;
+    Player& player;
     glm::vec3 front;
     glm::vec3 world_up;
-    float pitch;
-    float yaw;
     glm::mat4 view;
 
     bool moved_since_last_highlight_check;
     std::optional<glm::ivec3> last_faced_block_position;
     BlockFace last_faced_block_face = NORTH;
 public:
-    Camera(glm::vec3 position);
-    void translate(glm::vec3 direction);
-    void move(Direction d, float distance);
-    void rotate(float x, float y);
+    Camera(Player& player);
+    glm::vec3 position();
     void update();
     glm::mat4 get_view();
 

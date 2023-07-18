@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include "Game.h"
+#include "Player.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -48,7 +49,7 @@ void cursor_callback(GLFWwindow *window, double xpos, double ypos) {
     xoffset *= sensitivity;
     yoffset *= sensitivity;
 
-    game->get_camera()->rotate(xoffset, yoffset);
+    game->get_player()->rotate(xoffset, yoffset);
 }
 
 void Window::set_user_pointer(Game *game) {
@@ -76,45 +77,52 @@ void Window::poll_events() {
     glfwPollEvents();
 }
 
-void Window::process_input(Camera *camera, World *world) {
+void Window::process_input(Game *game) {
+    World *world = game->get_world();
+    Player *player = game->get_player();
+    Camera *camera = game->get_camera();
     const float camera_speed = 0.05f;
     if (glfwGetKey(this->window, GLFW_KEY_Q) == GLFW_PRESS)
         glfwSetWindowShouldClose(this->window, GLFW_TRUE);
     if (glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS)
-        camera->move(FORWARD, camera_speed);
+        player->move(FORWARD, camera_speed);
     if (glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS)
-        camera->move(BACKWARD, camera_speed);
+        player->move(BACKWARD, camera_speed);
     if (glfwGetKey(this->window, GLFW_KEY_A) == GLFW_PRESS)
-        camera->move(LEFT, camera_speed);
+        player->move(LEFT, camera_speed);
     if (glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
-        camera->move(RIGHT, camera_speed);
+        player->move(RIGHT, camera_speed);
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-        if (auto faced_block = camera->get_faced_block_pos(world)) {
-            BlockFace face = camera->get_last_faced_block_face();
-            glm::ivec3 change;
-            switch (face) {
-                case NORTH:
-                    change = glm::ivec3(0.0, 0.0, 1.0);
-                    break;
-                case EAST:
-                    change = glm::ivec3(1.0, 0.0, 0.0);
-                    break;
-                case SOUTH:
-                    change = glm::ivec3(0.0, 0.0, -1.0);
-                    break;
-                case WEST:
-                    change = glm::ivec3(-1.0, 0.0, 0.0);
-                    break;
-                case TOP:
-                    change = glm::ivec3(0.0, 1.0, 0.0);
-                    break;
-                case BOTTOM:
-                    change = glm::ivec3(0.0, -1.0, 0.0);
-                    break;
-                default:
-                    return;
+        float current_time = this->get_time();
+        if (current_time - this->last_block_place_time > 0.2f) {
+            this->last_block_place_time = current_time;
+            if (auto faced_block = camera->get_faced_block_pos(world)) {
+                BlockFace face = camera->get_last_faced_block_face();
+                glm::ivec3 change;
+                switch (face) {
+                    case NORTH:
+                        change = glm::ivec3(0.0, 0.0, 1.0);
+                        break;
+                    case EAST:
+                        change = glm::ivec3(1.0, 0.0, 0.0);
+                        break;
+                    case SOUTH:
+                        change = glm::ivec3(0.0, 0.0, -1.0);
+                        break;
+                    case WEST:
+                        change = glm::ivec3(-1.0, 0.0, 0.0);
+                        break;
+                    case TOP:
+                        change = glm::ivec3(0.0, 1.0, 0.0);
+                        break;
+                    case BOTTOM:
+                        change = glm::ivec3(0.0, -1.0, 0.0);
+                        break;
+                    default:
+                        return;
+                }
+                world->place_block(faced_block.value() + change);
             }
-            world->place_block(faced_block.value() + change);
         }
     }
 }
