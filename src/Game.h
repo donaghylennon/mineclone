@@ -12,7 +12,7 @@ private:
     World *world;
     Camera *camera;
     Player *player;
-    float last_frame_time;
+    float last_frame_time = 0.0f;
     float delta_time;
 public:
     Game();

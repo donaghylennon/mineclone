@@ -6,6 +6,11 @@ World::World() {
     this->map.insert(position(0,0,1));
 
     this->map.insert(position(-1,0,0));
+    for (int i = -10; i <= 10; i++) {
+        for (int j = -10; j <= 10; j++) {
+            this->map.insert(position(i,0,j));
+        }
+    }
 }
 
 std::unordered_set<position>& World::get_blocks() {
