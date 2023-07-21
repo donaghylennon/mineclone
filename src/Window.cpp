@@ -12,6 +12,7 @@ Window::Window(int width, int height) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     this->window = glfwCreateWindow(width, height, "Minecraft", NULL, NULL);
     if (this->window == NULL) {
@@ -94,7 +95,7 @@ void Window::process_input(Game *game) {
         player->set_movement_direction(RIGHT, player_speed);
     if (glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
         player->set_movement_direction(UP, 30.0f);
-    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
         float current_time = this->get_time();
         if (current_time - this->last_block_place_time > 0.2f) {
             this->last_block_place_time = current_time;
@@ -124,6 +125,16 @@ void Window::process_input(Game *game) {
                         return;
                 }
                 world->place_block(faced_block.value() + change);
+            }
+        }
+    }
+    if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+        float current_time = this->get_time();
+        if (current_time - this->last_block_place_time > 0.2f) {
+            this->last_block_place_time = current_time;
+            if (auto faced_block = camera->get_faced_block_pos(world)) {
+                BlockFace face = camera->get_last_faced_block_face();
+                world->remove_block(faced_block.value());
             }
         }
     }

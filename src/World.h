@@ -19,4 +19,5 @@ public:
     World();
     std::unordered_set<position>& get_blocks();
     void place_block(glm::ivec3 pos);
+    void remove_block(glm::ivec3 pos);
 };

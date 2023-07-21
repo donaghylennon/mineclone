@@ -20,3 +20,7 @@ std::unordered_set<position>& World::get_blocks() {
 void World::place_block(glm::ivec3 pos) {
     this->map.insert(pos);
 }
+
+void World::remove_block(glm::ivec3 pos) {
+    this->map.erase(pos);
+}
