@@ -31,7 +31,7 @@ glm::mat4 Camera::get_view() {
 std::optional<glm::ivec3> Camera::get_faced_block_pos(World *world) {
     if (this->moved_since_last_highlight_check) {
         this->moved_since_last_highlight_check = false;
-        std::unordered_set<glm::ivec3>& blocks = world->get_blocks();
+        auto& blocks = world->get_blocks();
         bool found = false;
 
         glm::vec3 start = this->position();

@@ -14,10 +14,10 @@ using position = glm::ivec3;
 class World {
 private:
     //std::unordered_map<position, Block> map;
-    std::unordered_set<position> map;
+    std::unordered_map<position, int> map;
 public:
     World();
-    std::unordered_set<position>& get_blocks();
+    std::unordered_map<position, int>& get_blocks();
     void place_block(glm::ivec3 pos);
     void remove_block(glm::ivec3 pos);
 };

@@ -38,9 +38,9 @@ void Renderer::draw(World *world, Camera *camera) {
     if (faced_block.has_value())
         player_is_facing_block = true;
 
-    for (position p : world->get_blocks())
-        this->cube_renderer->draw(p, camera, player_is_facing_block
-                && p == *faced_block);
+    for (const auto& entry : world->get_blocks())
+        this->cube_renderer->draw(entry.first, entry.second, camera,
+                player_is_facing_block && entry.first == *faced_block);
 }
 
 CubeRenderer::CubeRenderer()
@@ -113,15 +113,17 @@ CubeRenderer::CubeRenderer()
         exit(1);
     }
     
-    glGenTextures(1, &this->texture);
+    unsigned int texture;
+    glGenTextures(1, &texture);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
             data);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
+    this->block_data.push_back({{texture}, 1, {0, 0, 0, 0, 0, 0}});
 }
 
 CubeRenderer::~CubeRenderer() {
@@ -129,7 +131,8 @@ CubeRenderer::~CubeRenderer() {
     glDeleteBuffers(1, &this->vbo);
 }
 
-void CubeRenderer::draw(position pos, Camera *camera, bool highlighted) {
+void CubeRenderer::draw(position pos, unsigned int block_id, Camera *camera,
+        bool highlighted) {
     glm::mat4 model = glm::mat4(1.0f);
     glm::vec3 real_pos = pos;
     model = glm::translate(model, real_pos + glm::vec3(0.5f, 0.5f, 0.5f));
@@ -139,18 +142,22 @@ void CubeRenderer::draw(position pos, Camera *camera, bool highlighted) {
     glm::mat4 projection;
     projection = glm::perspective(glm::radians(45.0f), 1400.0f / 900.0f, 0.1f, 100.0f);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->texture);
+    auto block_data = this->block_data[block_id];
+    for (int i = 0; i < 6; i++) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D,
+                block_data.textures[block_data.face_textures[i]]);
 
-    this->shader.use();
-    this->shader.set_mat4("model", model);
-    this->shader.set_mat4("view", view);
-    this->shader.set_mat4("projection", projection);
-    if (highlighted) {
-        this->shader.set_float("highlight", 0.2f);
-    } else {
-        this->shader.set_float("highlight", 0.0f);
+        this->shader.use();
+        this->shader.set_mat4("model", model);
+        this->shader.set_mat4("view", view);
+        this->shader.set_mat4("projection", projection);
+        if (highlighted) {
+            this->shader.set_float("highlight", 0.2f);
+        } else {
+            this->shader.set_float("highlight", 0.0f);
+        }
+        glBindVertexArray(this->vao);
+        glDrawArrays(GL_TRIANGLES, i*6, 6);
     }
-    glBindVertexArray(this->vao);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
 }
