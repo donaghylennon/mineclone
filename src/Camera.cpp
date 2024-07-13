@@ -89,7 +89,7 @@ std::optional<glm::ivec3> Camera::get_faced_block_pos(World *world) {
         float distance = 0.0f;
         glm::ivec3 prev_pos = current_pos;
 
-        while (!found && distance < max_distance) {
+        while (!found && std::abs(distance) < max_distance) {
             prev_pos = current_pos;
             if (ray_length_1D.x < ray_length_1D.y
                     && ray_length_1D.x < ray_length_1D.z) {

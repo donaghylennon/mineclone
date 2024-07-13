@@ -61,19 +61,19 @@ CubeRenderer::CubeRenderer()
         -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
         -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
 
         -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
          0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
@@ -106,6 +106,7 @@ CubeRenderer::CubeRenderer()
             (void*)(6*sizeof(float)));
     glEnableVertexAttribArray(2);
 
+    stbi_set_flip_vertically_on_load(true);
     int width, height, num_components;
     unsigned char *data = stbi_load("res/cube.png", &width, &height, &num_components, 0);
     if (!data) {
@@ -113,17 +114,58 @@ CubeRenderer::CubeRenderer()
         exit(1);
     }
     
-    unsigned int texture;
-    glGenTextures(1, &texture);
+    unsigned int texture0, texture1, texture2;
+    glGenTextures(1, &texture0);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, texture0);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
             data);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
-    this->block_data.push_back({{texture}, 1, {0, 0, 0, 0, 0, 0}});
+    data = nullptr;
+    this->block_data.push_back({{texture0}, 1, {0, 0, 0, 0, 0, 0}});
+
+    BlockTextureData grass = {{0, 0, 0, 0, 0, 0}, 3, {1, 1, 1, 1, 0, 2}};
+    grass.textures[0] = texture0;
+
+    data = stbi_load("res/grass1.png", &width, &height, &num_components, 0);
+    if (!data) {
+        std::cout << "Failed to load texture" << std::endl;
+        exit(1);
+    }
+    
+    glGenTextures(1, &texture1);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+            data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
+    data = nullptr;
+    grass.textures[1] = texture1;
+
+    data = stbi_load("res/grass2.png", &width, &height, &num_components, 0);
+    if (!data) {
+        std::cout << "Failed to load texture" << std::endl;
+        exit(1);
+    }
+    
+    glGenTextures(1, &texture2);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture2);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+            data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
+    data = nullptr;
+    grass.textures[2] = texture2;
+    this->block_data.push_back(grass);
 }
 
 CubeRenderer::~CubeRenderer() {
@@ -131,7 +173,7 @@ CubeRenderer::~CubeRenderer() {
     glDeleteBuffers(1, &this->vbo);
 }
 
-void CubeRenderer::draw(position pos, unsigned int block_id, Camera *camera,
+void CubeRenderer::draw(position pos, int block_id, Camera *camera,
         bool highlighted) {
     glm::mat4 model = glm::mat4(1.0f);
     glm::vec3 real_pos = pos;

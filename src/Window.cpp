@@ -124,7 +124,7 @@ void Window::process_input(Game *game) {
                     default:
                         return;
                 }
-                world->place_block(faced_block.value() + change);
+                world->place_block(faced_block.value() + change, 1);
             }
         }
     }

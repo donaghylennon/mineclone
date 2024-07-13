@@ -21,7 +21,7 @@ private:
     glm::vec3 world_up;
     glm::mat4 view;
 
-    bool moved_since_last_highlight_check;
+    bool moved_since_last_highlight_check = false;
     std::optional<glm::ivec3> last_faced_block_position;
     BlockFace last_faced_block_face = NORTH;
 public:

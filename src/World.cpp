@@ -17,8 +17,8 @@ std::unordered_map<position, int>& World::get_blocks() {
     return this->map;
 }
 
-void World::place_block(glm::ivec3 pos) {
-    this->map.insert({pos, 0});
+void World::place_block(glm::ivec3 pos, int block_id) {
+    this->map.insert({pos, block_id});
 }
 
 void World::remove_block(glm::ivec3 pos) {

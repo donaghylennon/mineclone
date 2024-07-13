@@ -20,7 +20,7 @@ private:
 public:
     CubeRenderer();
     ~CubeRenderer();
-    void draw(position pos, unsigned int block_id, Camera *camera, bool highlighted);
+    void draw(position pos, int block_id, Camera *camera, bool highlighted);
 };
 
 class Renderer {

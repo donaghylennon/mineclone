@@ -18,6 +18,6 @@ private:
 public:
     World();
     std::unordered_map<position, int>& get_blocks();
-    void place_block(glm::ivec3 pos);
+    void place_block(glm::ivec3 pos, int block_id);
     void remove_block(glm::ivec3 pos);
 };

@@ -13,7 +13,7 @@ class Player {
     friend class Camera;
 private:
     glm::vec3 position;
-    glm::vec3 velocity;
+    glm::vec3 velocity{0};
     glm::vec3 size;
     float pitch = 0.0f;
     float yaw = -90.0f;
