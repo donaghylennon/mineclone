@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "Camera.h"
 #include "Player.h"
-#include <optional>
 
 Game::Game() {
     this->window = new Window(1400, 900);
@@ -13,11 +12,11 @@ Game::Game() {
 }
 
 Game::~Game() {
-    delete this->window;
-    delete this->renderer;
-    delete this->world;
     delete this->camera;
     delete this->player;
+    delete this->world;
+    delete this->renderer;
+    delete this->window;
 }
 
 World *Game::get_world() {
