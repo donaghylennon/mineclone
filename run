@@ -1,4 +1,3 @@
 #!/bin/sh
 
-cd build
-cmake -S .. && make && cd .. && ./build/minecraft
+cd build && cmake -S .. && make && cd .. && ./build/minecraft
