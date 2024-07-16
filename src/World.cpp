@@ -1,14 +1,17 @@
+#include "stb_perlin.h"
+
 #include "World.h"
 
 World::World() {
-    this->map.insert({position(0,0,0), 0});
-    this->map.insert({position(1,0,0), 0});
-    this->map.insert({position(0,0,1), 0});
-
-    this->map.insert({position(-1,0,0), 0});
     for (int i = -10; i <= 10; i++) {
         for (int j = -10; j <= 10; j++) {
-            this->map.insert({position(i,0,j), 0});
+            int height = ceil(20*stb_perlin_noise3(i*0.02, j*0.02, 0, 0, 0, 0));
+            for (int y = -11; y < height; y++) {
+                if (y == height-1)
+                    this->map.insert({position(i,y,j), 1});
+                else
+                    this->map.insert({position(i,y,j), 0});
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ Game::Game() {
     this->renderer = new Renderer(1400, 900);
     this->window->set_user_pointer(this);
     this->world = new World();
-    this->player = new Player(glm::vec3(0.5f, 1.5f, 3.5f));
+    this->player = new Player(glm::vec3(0.5f, 25 + 1.5f, 3.5f));
     this->camera = new Camera(*this->player);
 }
 
