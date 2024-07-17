@@ -61,11 +61,11 @@ file(GLOB_RECURSE HEADER_FILES
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${SOURCE_FILES})
 if(WIN32)
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/res)
-file(COPY res/cube.png DESTINATION ${CMAKE_BINARY_DIR}/res/)
-file(COPY res/grass1.png DESTINATION ${CMAKE_BINARY_DIR}/res/)
-file(COPY res/grass2.png DESTINATION ${CMAKE_BINARY_DIR}/res/)
-file(COPY ${CMAKE_SOURCE_DIR}/src/cube_shader.frag DESTINATION ${CMAKE_BINARY_DIR}/res/)
-file(COPY ${CMAKE_SOURCE_DIR}/src/cube_shader.vert DESTINATION ${CMAKE_BINARY_DIR}/res/)
+file(COPY ${CMAKE_SOURCE_DIR}/res/cube.png DESTINATION ${CMAKE_BINARY_DIR}/res/)
+file(COPY ${CMAKE_SOURCE_DIR}/res/grass1.png DESTINATION ${CMAKE_BINARY_DIR}/res/)
+file(COPY ${CMAKE_SOURCE_DIR}/res/grass2.png DESTINATION ${CMAKE_BINARY_DIR}/res/)
+file(COPY ${CMAKE_SOURCE_DIR}/res/cube_shader.frag DESTINATION ${CMAKE_BINARY_DIR}/res/)
+file(COPY ${CMAKE_SOURCE_DIR}/res/cube_shader.vert DESTINATION ${CMAKE_BINARY_DIR}/res/)
 endif(WIN32)
 
 # Define the link libraries
