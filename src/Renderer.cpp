@@ -44,7 +44,7 @@ void Renderer::draw(World *world, Camera *camera) {
 }
 
 CubeRenderer::CubeRenderer()
-    : shader(Shader("src/cube_shader.vert", "src/cube_shader.frag")) {
+    : shader(Shader("res/cube_shader.vert", "res/cube_shader.frag")) {
     float vertices[] = {
         // positions          // normals           // texture coords
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
