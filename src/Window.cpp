@@ -82,9 +82,10 @@ void Window::process_input(Game *game) {
     World *world = game->get_world();
     Player *player = game->get_player();
     Camera *camera = game->get_camera();
-    const float player_speed = 5.0f;
+    const float player_speed = 7.0f;
     if (glfwGetKey(this->window, GLFW_KEY_Q) == GLFW_PRESS)
         glfwSetWindowShouldClose(this->window, GLFW_TRUE);
+    //TODO: Make walk, jump, run methods on player instead
     if (glfwGetKey(this->window, GLFW_KEY_W) == GLFW_PRESS)
         player->set_movement_direction(FORWARD, player_speed);
     if (glfwGetKey(this->window, GLFW_KEY_S) == GLFW_PRESS)
@@ -94,7 +95,7 @@ void Window::process_input(Game *game) {
     if (glfwGetKey(this->window, GLFW_KEY_D) == GLFW_PRESS)
         player->set_movement_direction(RIGHT, player_speed);
     if (glfwGetKey(this->window, GLFW_KEY_SPACE) == GLFW_PRESS)
-        player->set_movement_direction(UP, 30.0f);
+        player->set_movement_direction(UP, 45.0f);
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
         float current_time = this->get_time();
         if (current_time - this->last_block_place_time > 0.2f) {

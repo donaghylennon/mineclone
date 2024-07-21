@@ -6,56 +6,86 @@ Player::Player(glm::vec3 position)
 }
 
 void Player::move(float elapsed_time, World *world) {
-    this->velocity.y += -100 * elapsed_time;
+    this->velocity.y += -150 * elapsed_time;
     glm::vec3 new_position = this->position + elapsed_time*this->velocity;
 
     auto blocks = world->get_blocks();
+    //TODO: Calculate trajectory and check if any blocks would collide with the
+    //player on that trajectory
     if (velocity.x >= 0) {
-        if (blocks.find({std::floor(new_position.x + this->size.x/2),
-                    std::floor(this->position.y),
-                    std::floor(this->position.z)}) != blocks.end()) {
-            new_position.x = new_position.x - (new_position.x + this->size.x/2 - std::floor(new_position.x + this->size.x/2));
-            velocity.x = 0;
+        for (int x_between = std::ceil(this->position.x);
+                x_between <= std::floor(new_position.x + this->size.x/2);
+                x_between++) {
+            if (blocks.find({x_between,
+                        std::floor(this->position.y),
+                        std::floor(this->position.z)}) != blocks.end()) {
+                new_position.x = x_between - this->size.x/2;
+                velocity.x = 0;
+                break;
+            }
         }
     } else {
-        if (blocks.find({std::floor(new_position.x - this->size.x/2),
-                    std::floor(this->position.y),
-                    std::floor(this->position.z)}) != blocks.end()) {
-            new_position.x = new_position.x + (std::floor(new_position.x - this->size.x/2) + 1 - (new_position.x - this->size.x/2));
-            velocity.x = 0;
+        for (int x_between = std::floor(this->position.x);
+                x_between >= std::floor(new_position.x - this->size.x/2);
+                x_between--) {
+            if (blocks.find({x_between,
+                        std::floor(this->position.y),
+                        std::floor(this->position.z)}) != blocks.end()) {
+                new_position.x = x_between + 1 + this->size.x/2;
+                velocity.x = 0;
+                break;
+            }
         }
     }
     this->grounded = false;
     if (velocity.y >= 0) {
-        if (blocks.find({std::floor(this->position.x),
-                    std::floor(new_position.y + this->size.y),
-                    std::floor(this->position.z)}) != blocks.end()) {
-            new_position.y = new_position.y - (new_position.y + this->size.y - std::floor(new_position.y + this->size.y));
-            velocity.y = 0;
-            this->grounded = true;
+        for (float y_between = this->position.y + this->size.y;
+                y_between <= std::ceil(new_position.y + this->size.y);
+                y_between++) {
+            if (blocks.find({std::floor(this->position.x),
+                        std::floor(y_between),
+                        std::floor(this->position.z)}) != blocks.end()) {
+                new_position.y = std::floor(y_between) - this->size.y;
+                velocity.y = 0;
+            }
         }
     } else {
-        if (blocks.find({std::floor(this->position.x),
-                    std::floor(new_position.y),
-                    std::floor(this->position.z)}) != blocks.end()) {
-            new_position.y = new_position.y + (std::floor(new_position.y) + 1 - new_position.y);
-            velocity.y = 0;
-            this->grounded = true;
+        for (float y_between = this->position.y;
+                y_between >= std::floor(new_position.y);
+                y_between--) {
+            if (blocks.find({std::floor(this->position.x),
+                        std::floor(y_between),
+                        std::floor(this->position.z)}) != blocks.end()) {
+                new_position.y = (std::floor(y_between) + 1);
+                velocity.y = 0;
+                this->grounded = true;
+                break;
+            }
         }
     }
     if (velocity.z >= 0) {
-        if (blocks.find({std::floor(this->position.x),
-                    std::floor(this->position.y),
-                    std::floor(new_position.z + this->size.z/2)}) != blocks.end()) {
-            new_position.z = new_position.z - (new_position.z + this->size.z/2 - std::floor(new_position.z + this->size.z/2));
-            velocity.z = 0;
+        for (int z_between = std::ceil(this->position.z);
+                z_between <= std::floor(new_position.z + this->size.z/2);
+                z_between++) {
+            if (blocks.find({std::floor(this->position.x),
+                        std::floor(this->position.y),
+                        z_between}) != blocks.end()) {
+                new_position.z = z_between - this->size.z/2;
+                velocity.z = 0;
+                break;
+            }
         }
     } else {
-        if (blocks.find({std::floor(this->position.x),
-                    std::floor(this->position.y),
-                    std::floor(new_position.z - this->size.z/2)}) != blocks.end()) {
-            new_position.z = new_position.z + (std::floor(new_position.z - this->size.z/2) + 1 - (new_position.z - this->size.z/2));
-            velocity.z = 0;
+        for (int z_between = std::floor(this->position.z);
+                z_between >= std::floor(new_position.z - this->size.z/2);
+                z_between--) {
+            if (blocks.find({std::floor(this->position.x),
+                        std::floor(this->position.y),
+                        z_between}) != blocks.end()) {
+                new_position.z = z_between + 1 + this->size.z/2;
+                velocity.z = 0;
+                break;
+            }
         }
     }
 
