@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "Renderer.h"
+#include "Model.h"
 
 Renderer::Renderer(int width, int height) {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -46,7 +47,7 @@ void Renderer::draw(World *world, Camera *camera) {
 
 CubeRenderer::CubeRenderer()
     : shader(Shader("res/cube_shader.vert", "res/cube_shader.frag")) {
-    float vertices[] = {
+    cube_model.add_data({
         // positions          // normals           // texture coords
          0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
@@ -89,23 +90,7 @@ CubeRenderer::CubeRenderer()
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
          0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
-    };
-
-    glGenVertexArrays(1, &this->vao);
-    glBindVertexArray(this->vao);
-
-    glGenBuffers(1, &this->vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-            (void*)(3*sizeof(float)));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
-            (void*)(6*sizeof(float)));
-    glEnableVertexAttribArray(2);
+    });
 
     stbi_set_flip_vertically_on_load(true);
     int width, height, num_components;
@@ -169,11 +154,6 @@ CubeRenderer::CubeRenderer()
     this->block_data.push_back(grass);
 }
 
-CubeRenderer::~CubeRenderer() {
-    glDeleteVertexArrays(1, &this->vao);
-    glDeleteBuffers(1, &this->vbo);
-}
-
 void CubeRenderer::draw(position pos, int block_id, Camera *camera,
         bool highlighted) {
     glm::mat4 model = glm::mat4(1.0f);
@@ -186,6 +166,7 @@ void CubeRenderer::draw(position pos, int block_id, Camera *camera,
     projection = glm::perspective(glm::radians(45.0f), 1400.0f / 900.0f, 0.1f, 100.0f);
 
     auto block_data = this->block_data[block_id];
+    cube_model.bind_vao();
     for (int i = 0; i < 6; i++) {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D,
@@ -200,7 +181,6 @@ void CubeRenderer::draw(position pos, int block_id, Camera *camera,
         } else {
             this->shader.set_float("highlight", 0.0f);
         }
-        glBindVertexArray(this->vao);
         glDrawArrays(GL_TRIANGLES, i*6, 6);
     }
 }

@@ -3,6 +3,7 @@
 #include "Shader.h"
 #include "World.h"
 #include "Camera.h"
+#include "Model.h"
 
 struct BlockTextureData {
     unsigned int textures[6];
@@ -12,14 +13,12 @@ struct BlockTextureData {
 
 class CubeRenderer {
 private:
-    unsigned int vao;
-    unsigned int vbo;
+    Model cube_model;
     std::vector<BlockTextureData> block_data;
     Shader shader;
 
 public:
     CubeRenderer();
-    ~CubeRenderer();
     void draw(position pos, int block_id, Camera *camera, bool highlighted);
 };
 
